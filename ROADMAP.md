@@ -1,9 +1,9 @@
 # Krypto manager roadmap
 
-## Stage 1
+## ~~Stage 1~~
 
-- Add wallet's fiat balance data structure.
-- Add service to manage wallet's fiat balance.
+- ~~Add wallet's fiat balance data structure.~~
+- ~~Add service to manage wallet's fiat balance.~~ 
 
 ## Stage 2
 
