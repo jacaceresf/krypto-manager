@@ -1,7 +1,8 @@
 package dev.jacaceresf.kryptomanager.services
 
 import dev.jacaceresf.kryptomanager.models.Wallet
-import java.math.BigDecimal
+import dev.jacaceresf.kryptomanager.models.WalletMovementDetail
+import dev.jacaceresf.kryptomanager.models.req.WalletFiatReq
 
 interface WalletService {
 
@@ -11,5 +12,7 @@ interface WalletService {
 
     fun createWallet(userEmail: String): Wallet
 
-    fun addFiatBalance(address: String, fiatBalance: BigDecimal)
+    fun addFiatBalance(walletFiatReq: WalletFiatReq): Wallet
+
+    fun getWalletMovements(address: String, from: String?, to: String?): WalletMovementDetail
 }
