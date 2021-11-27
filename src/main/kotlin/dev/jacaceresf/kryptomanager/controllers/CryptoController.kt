@@ -1,6 +1,8 @@
 package dev.jacaceresf.kryptomanager.controllers
 
+import dev.jacaceresf.kryptomanager.models.CryptoCurrentValue
 import dev.jacaceresf.kryptomanager.services.CryptoService
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -8,5 +10,7 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/cryptos")
 class CryptoController(private val cryptoService: CryptoService) {
 
+    @GetMapping("/prices/tracker")
+    fun getCryptoPricesFromTracker(): Collection<CryptoCurrentValue> = cryptoService.queryPricesFromPriceTracker()
 
 }

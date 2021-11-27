@@ -7,8 +7,8 @@
 
 ## Stage 2
 
-- Add data structure to manage crypto investment.
-- Add client for crypto pricing API (CoinmarketPro)
+- ~~Add data structure to manage crypto investment.~~
+- ~~Add client for crypto pricing API (CoinmarketPro)~~
 - Add service to manage crypto investment.
 
 ## Stage 3

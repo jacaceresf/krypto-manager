@@ -41,3 +41,9 @@ data class CryptoHistoricInfo(
     val crypto: Crypto,
     val historicValues: Collection<CryptoValue>
 )
+
+data class CryptoCurrentValue(
+    val symbol: String,
+    val name: String,
+    val currentPrice: BigDecimal
+)
