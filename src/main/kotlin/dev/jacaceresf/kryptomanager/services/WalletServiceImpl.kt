@@ -52,10 +52,9 @@ class WalletServiceImpl(
         walletRepository.save(wallet)
 
         val walletMovement = WalletMovement(
-            id = -1,
             movementId = UUID.randomUUID().toString().uppercase(),
             balance = wallet.balance,
-            walletAddress = wallet.address,
+            walletId = wallet.id,
             movementType = MovementType.CREDIT,
             timestamp = LocalDateTime.now()
         )
@@ -69,7 +68,7 @@ class WalletServiceImpl(
 
         val wallet = WalletUtils.getWalletFromOptional(walletRepository.findByAddress(address))
 
-        val movements = walletMovementRepository.findByWalletAddress(address)
+        val movements = walletMovementRepository.findByWalletId(wallet.id)
 
         return WalletMovementDetail(
             wallet = wallet,

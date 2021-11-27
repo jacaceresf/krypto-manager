@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository
 @Repository
 interface WalletMovementRepository : CrudRepository<WalletMovement, Long> {
 
-    fun findByWalletAddress(walletAddress: String): Collection<WalletMovement>
+    fun findByWalletId(walletId: Long): Collection<WalletMovement>
 
 }

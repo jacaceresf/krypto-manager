@@ -1,5 +1,6 @@
 package dev.jacaceresf.kryptomanager.models
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import javax.persistence.Entity
@@ -7,24 +8,36 @@ import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
 
-@Entity
+@Entity(name = "cryptocurrency")
 data class Crypto(
-    @Id val symbol: String,
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
+    val id: Long = -1,
+    val symbol: String,
     val name: String
 ) {
-    constructor() : this("", "") {
+    constructor() : this(symbol = "", name = "") {
 
     }
 }
 
 @Entity
 data class CryptoValue(
-    @Id @GeneratedValue(strategy = GenerationType.AUTO) val id: Long = -1,
-    val symbol: String,
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
+    val id: Long = -1,
+    val cryptoId: Long,
     val time: LocalDateTime,
     val value: BigDecimal
 ) {
-    constructor() : this(symbol = "", time = LocalDateTime.now(), value = BigDecimal.ZERO) {
+    constructor() : this(cryptoId = -1, time = LocalDateTime.now(), value = BigDecimal.ZERO) {
 
     }
 }
+
+data class CryptoHistoricInfo(
+    val crypto: Crypto,
+    val historicValues: Collection<CryptoValue>
+)

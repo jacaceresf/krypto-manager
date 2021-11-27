@@ -14,14 +14,15 @@ data class WalletMovement(
     @JsonIgnore val id: Long = -1,
     val movementId: String,
     val balance: BigDecimal,
-    @JsonIgnore val walletAddress: String,
+    @JsonIgnore
+    val walletId: Long,
     val movementType: MovementType,
     val timestamp: LocalDateTime
 ) {
     constructor() : this(
         movementId = "",
         balance = BigDecimal.ZERO,
-        walletAddress = "",
+        walletId = -1,
         movementType = MovementType.DEBIT,
         timestamp = LocalDateTime.now()
     ) {
