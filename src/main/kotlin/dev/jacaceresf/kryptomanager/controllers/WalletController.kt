@@ -29,4 +29,5 @@ class WalletController(private val walletService: WalletService) {
         @RequestParam(value = "from", required = false) fromDate: String?,
         @RequestParam(value = "to", required = false) toDate: String?
     ): WalletMovementDetail = walletService.getWalletMovements(address, fromDate, toDate)
+
 }

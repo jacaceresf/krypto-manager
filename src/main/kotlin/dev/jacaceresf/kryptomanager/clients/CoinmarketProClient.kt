@@ -29,7 +29,7 @@ class CoinmarketProClient {
 
     @PostConstruct
     fun init() {
-        print("Going to build web client with base URL -> $coinmarketCapBaseUrl")
+        log.info("Going to build web client with base URL -> [$coinmarketCapBaseUrl]")
         webClient = WebClient.builder()
             .baseUrl(coinmarketCapBaseUrl)
             .defaultHeader(HttpHeaders.ACCEPT, APPLICATION_JSON_VALUE)

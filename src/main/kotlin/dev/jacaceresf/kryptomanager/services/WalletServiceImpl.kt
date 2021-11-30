@@ -5,6 +5,7 @@ import dev.jacaceresf.kryptomanager.models.Wallet
 import dev.jacaceresf.kryptomanager.models.WalletMovement
 import dev.jacaceresf.kryptomanager.models.WalletMovementDetail
 import dev.jacaceresf.kryptomanager.models.req.WalletFiatReq
+import dev.jacaceresf.kryptomanager.repositories.TransactionRepository
 import dev.jacaceresf.kryptomanager.repositories.WalletMovementRepository
 import dev.jacaceresf.kryptomanager.repositories.WalletRepository
 import dev.jacaceresf.kryptomanager.utils.WalletUtils
@@ -16,7 +17,9 @@ import java.util.*
 @Service
 class WalletServiceImpl(
     private val walletRepository: WalletRepository,
-    private val walletMovementRepository: WalletMovementRepository
+    private val walletMovementRepository: WalletMovementRepository,
+    private val transactionRepository: TransactionRepository,
+    private val cryptoService: CryptoService
 ) : WalletService {
 
     override fun getWallets(): MutableIterable<Wallet> = walletRepository.findAll();

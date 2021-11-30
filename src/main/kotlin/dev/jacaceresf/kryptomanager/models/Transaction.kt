@@ -11,6 +11,7 @@ data class Transaction(
     @Id
     @GeneratedValue
     val id: Long = -1,
+    val token: String,
     val walletId: Long = -1,
     val cryptoId: Long = -1,
     val timestamp: LocalDateTime,
@@ -19,6 +20,7 @@ data class Transaction(
     val type: TransactionType
 ) {
     constructor() : this(
+        token = "",
         timestamp = LocalDateTime.now(),
         amount = BigDecimal.ZERO,
         cryptoPrice = BigDecimal.ZERO,

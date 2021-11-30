@@ -1,6 +1,7 @@
 package dev.jacaceresf.kryptomanager.services
 
 import dev.jacaceresf.kryptomanager.clients.CoinmarketProClient
+import dev.jacaceresf.kryptomanager.exceptions.NotFoundException
 import dev.jacaceresf.kryptomanager.models.Crypto
 import dev.jacaceresf.kryptomanager.models.CryptoCurrentValue
 import dev.jacaceresf.kryptomanager.models.CryptoHistoricInfo
@@ -86,5 +87,27 @@ class CryptoServiceImpl(
             crypto = crypto,
             historicValues = prices
         )
+    }
+
+    override fun getCryptoBySymbol(symbol: String): Crypto {
+        return CryptoUtils.getCryptoFromOptional(cryptoRepository.findBySymbol(symbol))
+    }
+
+    override fun getCryptoCurrentPrice(symbol: String): CryptoCurrentValue {
+
+        val cryptoData = coinmarketProClient.getCryptoData(mutableListOf(symbol))
+
+        val coinmarketValue =
+            cryptoData.data.getOrDefault(symbol, null) ?: throw NotFoundException("Crypto with symbol not found.")
+
+        val cryptoCurrentValue = CryptoCurrentValue(
+            symbol = symbol,
+            name = coinmarketValue.name,
+            currentPrice = BigDecimal.valueOf(coinmarketValue.quote["USD"]?.price!!)
+        )
+
+        GlobalScope.launch { computeAndSavePrices(mutableListOf(cryptoCurrentValue)) }
+
+        return cryptoCurrentValue
     }
 }
