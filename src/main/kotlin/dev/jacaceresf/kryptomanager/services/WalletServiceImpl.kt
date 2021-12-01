@@ -42,6 +42,7 @@ class WalletServiceImpl(
         return walletRepository.save(wallet)
     }
 
+
     override fun addFiatBalance(walletFiatReq: WalletFiatReq): Wallet {
 
         val wallet = WalletUtils.getWalletFromOptional(walletRepository.findByAddress(walletFiatReq.walletAddress))

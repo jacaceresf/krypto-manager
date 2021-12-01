@@ -17,4 +17,6 @@ interface CryptoService {
     fun getCryptoBySymbol(symbol: String): Crypto
 
     fun getCryptoCurrentPrice(symbol: String): CryptoCurrentValue
+
+    fun getCryptoCurrentPriceFromId(cryptoId: Long): CryptoCurrentValue
 }

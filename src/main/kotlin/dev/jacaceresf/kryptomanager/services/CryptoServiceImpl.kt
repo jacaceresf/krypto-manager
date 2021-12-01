@@ -110,4 +110,11 @@ class CryptoServiceImpl(
 
         return cryptoCurrentValue
     }
+
+    override fun getCryptoCurrentPriceFromId(cryptoId: Long): CryptoCurrentValue {
+
+        val crypto = CryptoUtils.getCryptoFromOptional(cryptoRepository.findById(cryptoId))
+
+        return getCryptoCurrentPrice(crypto.symbol)
+    }
 }

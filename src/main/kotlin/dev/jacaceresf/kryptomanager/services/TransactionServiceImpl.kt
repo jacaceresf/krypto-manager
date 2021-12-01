@@ -91,4 +91,8 @@ class TransactionServiceImpl(
         ///return response
         return response
     }
+
+    override fun getWalletTransactions(walletId: Long): Collection<Transaction> {
+        return transactionRepository.findByWalletIdOrderByTimestampAsc(walletId)
+    }
 }
