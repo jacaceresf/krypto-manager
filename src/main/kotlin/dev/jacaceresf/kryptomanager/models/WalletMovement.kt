@@ -17,14 +17,16 @@ data class WalletMovement(
     @JsonIgnore
     val walletId: Long,
     val movementType: MovementType,
-    val timestamp: LocalDateTime
+    val timestamp: LocalDateTime,
+    val description: String
 ) {
     constructor() : this(
         movementId = "",
         balance = BigDecimal.ZERO,
         walletId = -1,
         movementType = MovementType.DEBIT,
-        timestamp = LocalDateTime.now()
+        timestamp = LocalDateTime.now(),
+        description = ""
     ) {
 
     }

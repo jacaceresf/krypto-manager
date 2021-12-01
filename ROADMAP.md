@@ -9,11 +9,12 @@
 
 - ~~Add data structure to manage crypto investment.~~
 - ~~Add client for crypto pricing API (CoinmarketPro)~~
-- Add service to manage crypto investment.
+- ~~Add service to manage crypto investment.~~
 
 ## Stage 3
 
 - Integrate wallet and crypto management services.
+- Get crypto wallet balance, not just fiat.
 - Add API to manage investment effectively.
 
 ## Stage 4

@@ -4,8 +4,9 @@ import dev.jacaceresf.kryptomanager.models.MovementType
 import dev.jacaceresf.kryptomanager.models.Wallet
 import dev.jacaceresf.kryptomanager.models.WalletMovement
 import dev.jacaceresf.kryptomanager.models.WalletMovementDetail
+import dev.jacaceresf.kryptomanager.models.req.CryptoTransactionResponse
+import dev.jacaceresf.kryptomanager.models.req.CryptoTransactionType
 import dev.jacaceresf.kryptomanager.models.req.WalletFiatReq
-import dev.jacaceresf.kryptomanager.repositories.TransactionRepository
 import dev.jacaceresf.kryptomanager.repositories.WalletMovementRepository
 import dev.jacaceresf.kryptomanager.repositories.WalletRepository
 import dev.jacaceresf.kryptomanager.utils.WalletUtils
@@ -17,9 +18,7 @@ import java.util.*
 @Service
 class WalletServiceImpl(
     private val walletRepository: WalletRepository,
-    private val walletMovementRepository: WalletMovementRepository,
-    private val transactionRepository: TransactionRepository,
-    private val cryptoService: CryptoService
+    private val walletMovementRepository: WalletMovementRepository
 ) : WalletService {
 
     override fun getWallets(): MutableIterable<Wallet> = walletRepository.findAll();
@@ -59,7 +58,8 @@ class WalletServiceImpl(
             balance = wallet.balance,
             walletId = wallet.id,
             movementType = MovementType.CREDIT,
-            timestamp = LocalDateTime.now()
+            timestamp = LocalDateTime.now(),
+            description = "USD balance added"
         )
 
         walletMovementRepository.save(walletMovement)
@@ -77,5 +77,45 @@ class WalletServiceImpl(
             wallet = wallet,
             movements = movements
         )
+    }
+
+    override fun updateWalletBalanceFromCryptoTransaction(cryptoTransactionResponse: CryptoTransactionResponse) {
+
+        val wallet = WalletUtils.getWalletFromOptional(walletRepository.findById(cryptoTransactionResponse.wallet.id))
+
+        val balance = cryptoTransactionResponse.executionPrice * cryptoTransactionResponse.amount
+
+        if (cryptoTransactionResponse.type == CryptoTransactionType.BUY) {
+            wallet.balance -= balance
+        } else {
+            wallet.balance += balance
+        }
+
+        walletRepository.save(wallet)
+
+        saveWalletMovementFromTransaction(cryptoTransactionResponse)
+    }
+
+    override fun saveWalletMovementFromTransaction(cryptoTransactionResponse: CryptoTransactionResponse) {
+
+        val movementType = when (cryptoTransactionResponse.type) {
+            CryptoTransactionType.BUY -> {
+                MovementType.DEBIT
+            }
+            else -> {
+                MovementType.CREDIT
+            }
+        }
+
+        val walletMovement = WalletMovement(
+            movementId = UUID.randomUUID().toString().uppercase(),
+            balance = cryptoTransactionResponse.executionPrice * cryptoTransactionResponse.amount,
+            walletId = cryptoTransactionResponse.wallet.id,
+            movementType = movementType,
+            timestamp = LocalDateTime.now(),
+            description = cryptoTransactionResponse.crypto.symbol + " " + cryptoTransactionResponse.type
+        )
+
+        walletMovementRepository.save(walletMovement)
     }
 }

@@ -6,7 +6,7 @@ import java.math.BigDecimal
 
 data class CryptoTransaction(
     val walletAddress: String,
-    val cryptoSymbol: String,
+    val crypto: String,
     val amount: BigDecimal,
     val type: CryptoTransactionType
 )

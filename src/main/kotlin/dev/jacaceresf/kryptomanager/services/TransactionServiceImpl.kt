@@ -43,7 +43,7 @@ class TransactionServiceImpl(
         val wallet = walletService.getWalletByAddress(cryptoTransaction.walletAddress)
 
         ///get crypto from symbol
-        val crypto = cryptoService.getCryptoBySymbol(cryptoTransaction.cryptoSymbol)
+        val crypto = cryptoService.getCryptoBySymbol(cryptoTransaction.crypto)
 
         ///get crypto price
         val price = cryptoService.getCryptoCurrentPrice(crypto.symbol)
@@ -63,11 +63,12 @@ class TransactionServiceImpl(
 
         ///save transaction
         val transactionToSave = Transaction(
-            token = Util.getTransactionToken(wallet.address, crypto.symbol),
+            token = getTransactionToken(wallet.address, crypto.symbol),
             walletId = wallet.id,
             cryptoId = crypto.id,
             timestamp = LocalDateTime.now(),
             amount = cryptoTransaction.amount,
+            executionPrice = executionPrice,
             cryptoPrice = price.currentPrice,
             type = txType
         )
@@ -75,14 +76,19 @@ class TransactionServiceImpl(
         log.info("Got transaction token -> [${transactionToSave.token}]")
 
         transactionRepository.save(transactionToSave)
-        ///return response
 
-        return CryptoTransactionResponse(
+        val response = CryptoTransactionResponse(
             wallet = wallet,
             crypto = crypto,
             executionPrice = price.currentPrice,
             amount = cryptoTransaction.amount,
             type = cryptoTransaction.type
         )
+
+        ///update wallet balance
+        walletService.updateWalletBalanceFromCryptoTransaction(response)
+
+        ///return response
+        return response
     }
 }
