@@ -10,7 +10,6 @@ import java.math.BigDecimal
 @Service
 class WalletBalanceServiceImpl(
     private val walletService: WalletService,
-    private val transactionService: TransactionService,
     private val cryptoService: CryptoService
 ) :
     WalletBalanceService {
@@ -20,7 +19,7 @@ class WalletBalanceServiceImpl(
         val wallet = walletService.getWalletByAddress(walletAddress)
 
         ///get wallet transactions
-        val walletTransactions = transactionService.getWalletTransactions(walletId = wallet.id)
+        val walletTransactions = walletService.getWalletTransactions(walletId = wallet.id)
 
         val cryptoBalanceCollection = mutableListOf<CryptoBalance>()
         ///iterate over transactions and determine amount

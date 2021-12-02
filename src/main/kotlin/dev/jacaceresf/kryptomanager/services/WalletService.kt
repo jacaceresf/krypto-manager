@@ -1,5 +1,6 @@
 package dev.jacaceresf.kryptomanager.services
 
+import dev.jacaceresf.kryptomanager.models.Transaction
 import dev.jacaceresf.kryptomanager.models.Wallet
 import dev.jacaceresf.kryptomanager.models.WalletMovementDetail
 import dev.jacaceresf.kryptomanager.models.req.CryptoTransactionResponse
@@ -20,4 +21,6 @@ interface WalletService {
     fun updateWalletBalanceFromCryptoTransaction(cryptoTransactionResponse: CryptoTransactionResponse)
 
     fun saveWalletMovementFromTransaction(cryptoTransactionResponse: CryptoTransactionResponse)
+
+    fun getWalletTransactions(walletId: Long): Collection<Transaction>
 }

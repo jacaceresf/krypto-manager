@@ -16,7 +16,8 @@ import java.time.LocalDateTime
 class TransactionServiceImpl(
     private val cryptoService: CryptoService,
     private val walletService: WalletService,
-    private val transactionRepository: TransactionRepository
+    private val transactionRepository: TransactionRepository,
+    private val walletBalanceService: WalletBalanceService
 ) :
     TransactionService {
 
@@ -50,15 +51,30 @@ class TransactionServiceImpl(
 
         val executionPrice = price.currentPrice * cryptoTransaction.amount
 
-        ///check amount with balance
-        if (wallet.balance < executionPrice) {
-            throw RuntimeException("Insufficient wallet balance.")
-        }
+        val txType: TransactionType
+        if (cryptoTransaction.type == CryptoTransactionType.BUY) {
+            txType = TransactionType.BUY
 
-        val txType = if (cryptoTransaction.type == CryptoTransactionType.BUY) {
-            TransactionType.BUY
+            ///check amount with balance
+            if (wallet.balance < executionPrice) {
+                throw RuntimeException("Insufficient wallet balance.")
+            }
+
         } else {
-            TransactionType.SELL
+            txType = TransactionType.SELL
+            val walletCompositeBalance = walletBalanceService.getWalletCompositeBalance(wallet.address)
+
+            if (walletCompositeBalance.cryptoBalance.isEmpty()) {
+                throw RuntimeException("You don't own any kind of crypto so you can't sell.")
+            }
+
+            val cryptoBalance =
+                walletCompositeBalance.cryptoBalance.firstOrNull { it.crypto.symbol == cryptoTransaction.crypto }
+                    ?: throw RuntimeException("You don't have ${cryptoTransaction.crypto} available")
+
+            if (cryptoBalance.balance < cryptoTransaction.amount) {
+                throw RuntimeException("You don't have enough balance for current operation.")
+            }
         }
 
         ///save transaction
@@ -90,9 +106,5 @@ class TransactionServiceImpl(
 
         ///return response
         return response
-    }
-
-    override fun getWalletTransactions(walletId: Long): Collection<Transaction> {
-        return transactionRepository.findByWalletIdOrderByTimestampAsc(walletId)
     }
 }

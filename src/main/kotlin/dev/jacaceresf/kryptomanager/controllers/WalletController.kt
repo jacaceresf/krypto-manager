@@ -20,7 +20,7 @@ class WalletController(
     @GetMapping("/address/{address}")
     fun getWalletByAddress(@PathVariable("address") address: String): Wallet = walletService.getWalletByAddress(address)
 
-    @PostMapping("/save/{email}")
+    @PostMapping("/create/{email}")
     fun saveWallet(@PathVariable("email") email: String): Wallet = walletService.createWallet(email)
 
     @PatchMapping("/balance")

@@ -13,9 +13,9 @@
 
 ## Stage 3
 
-- Integrate wallet and crypto management services.
-- Get crypto wallet balance, not just fiat.
-- Add API to manage investment effectively.
+- ~~Integrate wallet and crypto management services.~~
+- ~~Get crypto wallet balance, not just fiat.~~
+- ~~Add API to manage investment effectively.~~
 
 ## Stage 4
 

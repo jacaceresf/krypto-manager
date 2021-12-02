@@ -10,6 +10,8 @@ import java.util.*
 interface WalletRepository : CrudRepository<Wallet, Long> {
 
     fun findByAddress(address: String): Optional<Wallet>
+
+    fun findByUserEmail(userEmail: String): Optional<Wallet>
 }
 
 @Repository

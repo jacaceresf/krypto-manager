@@ -1,12 +1,10 @@
 package dev.jacaceresf.kryptomanager.services
 
-import dev.jacaceresf.kryptomanager.models.MovementType
-import dev.jacaceresf.kryptomanager.models.Wallet
-import dev.jacaceresf.kryptomanager.models.WalletMovement
-import dev.jacaceresf.kryptomanager.models.WalletMovementDetail
+import dev.jacaceresf.kryptomanager.models.*
 import dev.jacaceresf.kryptomanager.models.req.CryptoTransactionResponse
 import dev.jacaceresf.kryptomanager.models.req.CryptoTransactionType
 import dev.jacaceresf.kryptomanager.models.req.WalletFiatReq
+import dev.jacaceresf.kryptomanager.repositories.TransactionRepository
 import dev.jacaceresf.kryptomanager.repositories.WalletMovementRepository
 import dev.jacaceresf.kryptomanager.repositories.WalletRepository
 import dev.jacaceresf.kryptomanager.utils.WalletUtils
@@ -18,7 +16,8 @@ import java.util.*
 @Service
 class WalletServiceImpl(
     private val walletRepository: WalletRepository,
-    private val walletMovementRepository: WalletMovementRepository
+    private val walletMovementRepository: WalletMovementRepository,
+    private val transactionRepository: TransactionRepository
 ) : WalletService {
 
     override fun getWallets(): MutableIterable<Wallet> = walletRepository.findAll();
@@ -28,6 +27,9 @@ class WalletServiceImpl(
     }
 
     override fun createWallet(userEmail: String): Wallet {
+
+        val walletByEmail = walletRepository.findByUserEmail(userEmail)
+        if (walletByEmail.isPresent) throw RuntimeException("Email is already in use.")
 
         val wallet = Wallet(
             id = -1,
@@ -118,5 +120,9 @@ class WalletServiceImpl(
         )
 
         walletMovementRepository.save(walletMovement)
+    }
+
+    override fun getWalletTransactions(walletId: Long): Collection<Transaction> {
+        return transactionRepository.findByWalletIdOrderByTimestampAsc(walletId)
     }
 }
