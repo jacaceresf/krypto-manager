@@ -9,9 +9,7 @@ import dev.jacaceresf.kryptomanager.models.CryptoValue
 import dev.jacaceresf.kryptomanager.repositories.CryptoRepository
 import dev.jacaceresf.kryptomanager.repositories.CryptoValueRepository
 import dev.jacaceresf.kryptomanager.utils.CryptoUtils
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
@@ -40,11 +38,11 @@ class CryptoServiceImpl(
     }
 
 
-    override fun queryPrices(): Collection<Crypto> {
+    override suspend fun queryPrices(): Collection<Crypto> {
         TODO("Not yet implemented")
     }
 
-    override fun queryPricesFromPriceTracker(): Collection<CryptoCurrentValue> {
+    override suspend fun queryPricesFromPriceTracker(): Collection<CryptoCurrentValue> {
 
         val cryptosDb = cryptoRepository.findAll()
 
@@ -65,23 +63,19 @@ class CryptoServiceImpl(
             )
         }
 
-        GlobalScope.launch { computeAndSavePrices(result) }
+        computeAndSavePrices(result)
 
         log.info("Returning result with ${result.count()} items")
         return result
     }
 
-    override fun getCryptoInfo(symbol: String): CryptoHistoricInfo {
+    override suspend fun getCryptoInfo(symbol: String): CryptoHistoricInfo {
 
         val crypto = CryptoUtils.getCryptoFromOptional(cryptoRepository.findBySymbol(symbol))
 
-        val priceDb = cryptoValueRepository.findAll()
+        val priceDb = cryptoValueRepository.findAll().toList()
 
-        val prices = if (priceDb.count() > 0) {
-            priceDb.toList()
-        } else {
-            emptyList()
-        }
+        val prices = if (priceDb.isNotEmpty()) priceDb.toList() else emptyList()
 
         return CryptoHistoricInfo(
             crypto = crypto,
@@ -89,11 +83,11 @@ class CryptoServiceImpl(
         )
     }
 
-    override fun getCryptoBySymbol(symbol: String): Crypto {
+    override suspend fun getCryptoBySymbol(symbol: String): Crypto {
         return CryptoUtils.getCryptoFromOptional(cryptoRepository.findBySymbol(symbol))
     }
 
-    override fun getCryptoCurrentPrice(symbol: String): CryptoCurrentValue {
+    override suspend fun getCryptoCurrentPrice(symbol: String): CryptoCurrentValue {
 
         val cryptoData = coinmarketProClient.getCryptoData(mutableListOf(symbol))
 
@@ -106,12 +100,12 @@ class CryptoServiceImpl(
             currentPrice = BigDecimal.valueOf(coinmarketValue.quote["USD"]?.price!!)
         )
 
-        GlobalScope.launch { computeAndSavePrices(mutableListOf(cryptoCurrentValue)) }
+        computeAndSavePrices(mutableListOf(cryptoCurrentValue))
 
         return cryptoCurrentValue
     }
 
-    override fun getCryptoCurrentPriceFromId(cryptoId: Long): CryptoCurrentValue {
+    override suspend fun getCryptoCurrentPriceFromId(cryptoId: Long): CryptoCurrentValue {
 
         val crypto = CryptoUtils.getCryptoFromOptional(cryptoRepository.findById(cryptoId))
 

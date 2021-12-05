@@ -15,26 +15,26 @@ class WalletController(
 ) {
 
     @GetMapping
-    fun getAllWallets(): MutableIterable<Wallet> = walletService.getWallets()
+    suspend fun getAllWallets(): MutableIterable<Wallet> = walletService.getWallets()
 
     @GetMapping("/address/{address}")
-    fun getWalletByAddress(@PathVariable("address") address: String): Wallet = walletService.getWalletByAddress(address)
+    suspend fun getWalletByAddress(@PathVariable("address") address: String): Wallet = walletService.getWalletByAddress(address)
 
     @PostMapping("/create/{email}")
-    fun saveWallet(@PathVariable("email") email: String): Wallet = walletService.createWallet(email)
+    suspend fun saveWallet(@PathVariable("email") email: String): Wallet = walletService.createWallet(email)
 
     @PatchMapping("/balance")
-    fun addFiatBalance(@RequestBody walletFiatReq: WalletFiatReq): Wallet =
+    suspend fun addFiatBalance(@RequestBody walletFiatReq: WalletFiatReq): Wallet =
         walletService.addFiatBalance(walletFiatReq)
 
     @GetMapping("/{address}/movements")
-    fun getWalletMovements(
+    suspend fun getWalletMovements(
         @PathVariable("address") address: String,
         @RequestParam(value = "from", required = false) fromDate: String?,
         @RequestParam(value = "to", required = false) toDate: String?
     ): WalletMovementDetail = walletService.getWalletMovements(address, fromDate, toDate)
 
     @GetMapping("/{address}/balance/crypto")
-    fun getWalletCompositeBalance(@PathVariable("address") address: String) =
+    suspend fun getWalletCompositeBalance(@PathVariable("address") address: String) =
         walletBalanceService.getWalletCompositeBalance(address)
 }

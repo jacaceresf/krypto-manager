@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController
 class CryptoController(private val cryptoService: CryptoService) {
 
     @GetMapping("/prices/tracker")
-    fun getCryptoPricesFromTracker(): Collection<CryptoCurrentValue> = cryptoService.queryPricesFromPriceTracker()
+    suspend fun getCryptoPricesFromTracker(): Collection<CryptoCurrentValue> =
+        cryptoService.queryPricesFromPriceTracker()
 
 }

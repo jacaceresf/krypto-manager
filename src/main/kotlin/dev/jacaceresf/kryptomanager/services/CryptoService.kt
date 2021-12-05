@@ -8,15 +8,15 @@ interface CryptoService {
 
     suspend fun computeAndSavePrices(prices: Collection<CryptoCurrentValue>): Unit
 
-    fun queryPrices(): Collection<Crypto>
+    suspend fun queryPrices(): Collection<Crypto>
 
-    fun queryPricesFromPriceTracker(): Collection<CryptoCurrentValue>
+    suspend fun queryPricesFromPriceTracker(): Collection<CryptoCurrentValue>
 
-    fun getCryptoInfo(symbol: String): CryptoHistoricInfo
+    suspend fun getCryptoInfo(symbol: String): CryptoHistoricInfo
 
-    fun getCryptoBySymbol(symbol: String): Crypto
+    suspend fun getCryptoBySymbol(symbol: String): Crypto
 
-    fun getCryptoCurrentPrice(symbol: String): CryptoCurrentValue
+    suspend fun getCryptoCurrentPrice(symbol: String): CryptoCurrentValue
 
-    fun getCryptoCurrentPriceFromId(cryptoId: Long): CryptoCurrentValue
+    suspend fun getCryptoCurrentPriceFromId(cryptoId: Long): CryptoCurrentValue
 }

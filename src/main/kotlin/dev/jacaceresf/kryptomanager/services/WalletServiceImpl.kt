@@ -20,13 +20,13 @@ class WalletServiceImpl(
     private val transactionRepository: TransactionRepository
 ) : WalletService {
 
-    override fun getWallets(): MutableIterable<Wallet> = walletRepository.findAll();
+    override suspend fun getWallets(): MutableIterable<Wallet> = walletRepository.findAll();
 
-    override fun getWalletByAddress(address: String): Wallet {
+    override suspend fun getWalletByAddress(address: String): Wallet {
         return WalletUtils.getWalletFromOptional(walletRepository.findByAddress(address))
     }
 
-    override fun createWallet(userEmail: String): Wallet {
+    override suspend fun createWallet(userEmail: String): Wallet {
 
         val walletByEmail = walletRepository.findByUserEmail(userEmail)
         if (walletByEmail.isPresent) throw RuntimeException("Email is already in use.")
@@ -45,7 +45,7 @@ class WalletServiceImpl(
     }
 
 
-    override fun addFiatBalance(walletFiatReq: WalletFiatReq): Wallet {
+    override suspend fun addFiatBalance(walletFiatReq: WalletFiatReq): Wallet {
 
         val wallet = WalletUtils.getWalletFromOptional(walletRepository.findByAddress(walletFiatReq.walletAddress))
 
@@ -70,7 +70,7 @@ class WalletServiceImpl(
         return wallet
     }
 
-    override fun getWalletMovements(address: String, from: String?, to: String?): WalletMovementDetail {
+    override suspend fun getWalletMovements(address: String, from: String?, to: String?): WalletMovementDetail {
 
         val wallet = WalletUtils.getWalletFromOptional(walletRepository.findByAddress(address))
 
@@ -82,7 +82,7 @@ class WalletServiceImpl(
         )
     }
 
-    override fun updateWalletBalanceFromCryptoTransaction(cryptoTransactionResponse: CryptoTransactionResponse) {
+    override suspend fun updateWalletBalanceFromCryptoTransaction(cryptoTransactionResponse: CryptoTransactionResponse) {
 
         val wallet = WalletUtils.getWalletFromOptional(walletRepository.findById(cryptoTransactionResponse.wallet.id))
 
@@ -99,7 +99,7 @@ class WalletServiceImpl(
         saveWalletMovementFromTransaction(cryptoTransactionResponse)
     }
 
-    override fun saveWalletMovementFromTransaction(cryptoTransactionResponse: CryptoTransactionResponse) {
+    override suspend fun saveWalletMovementFromTransaction(cryptoTransactionResponse: CryptoTransactionResponse) {
 
         val movementType = when (cryptoTransactionResponse.type) {
             CryptoTransactionType.BUY -> {
@@ -122,7 +122,7 @@ class WalletServiceImpl(
         walletMovementRepository.save(walletMovement)
     }
 
-    override fun getWalletTransactions(walletId: Long): Collection<Transaction> {
+    override suspend fun getWalletTransactions(walletId: Long): Collection<Transaction> {
         return transactionRepository.findByWalletIdOrderByTimestampAsc(walletId)
     }
 }

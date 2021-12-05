@@ -36,7 +36,7 @@ class TransactionServiceImpl(
         }
     }
 
-    override fun doTransaction(cryptoTransaction: CryptoTransaction): CryptoTransactionResponse {
+    override suspend fun doTransaction(cryptoTransaction: CryptoTransaction): CryptoTransactionResponse {
 
         log.info("Going to create transaction with request -> $cryptoTransaction")
 

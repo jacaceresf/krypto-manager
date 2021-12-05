@@ -14,7 +14,7 @@ class WalletBalanceServiceImpl(
 ) :
     WalletBalanceService {
 
-    override fun getWalletCompositeBalance(walletAddress: String): WalletCompositeBalance {
+    override suspend fun getWalletCompositeBalance(walletAddress: String): WalletCompositeBalance {
         ///get wallet by address
         val wallet = walletService.getWalletByAddress(walletAddress)
 

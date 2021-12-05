@@ -9,14 +9,14 @@ import java.util.*
 @Repository
 interface WalletRepository : CrudRepository<Wallet, Long> {
 
-    fun findByAddress(address: String): Optional<Wallet>
+    suspend fun findByAddress(address: String): Optional<Wallet>
 
-    fun findByUserEmail(userEmail: String): Optional<Wallet>
+    suspend fun findByUserEmail(userEmail: String): Optional<Wallet>
 }
 
 @Repository
 interface WalletMovementRepository : CrudRepository<WalletMovement, Long> {
 
-    fun findByWalletId(walletId: Long): Collection<WalletMovement>
+    suspend fun findByWalletId(walletId: Long): Collection<WalletMovement>
 
 }

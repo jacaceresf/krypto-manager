@@ -2,6 +2,7 @@ package dev.jacaceresf.kryptomanager.clients
 
 import dev.jacaceresf.kryptomanager.constants.ApiConstants
 import dev.jacaceresf.kryptomanager.models.coinmarketcap.CoinmarketCapResponse
+import kotlinx.coroutines.reactor.awaitSingle
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
@@ -49,7 +50,7 @@ class CoinmarketProClient {
     }
 
 
-    fun getCryptoData(cryptos: Collection<String>): CoinmarketCapResponse {
+    suspend fun getCryptoData(cryptos: Collection<String>): CoinmarketCapResponse {
 
         log.info("Going to retrieve crypto prices from CoinmarketCap")
 
@@ -70,7 +71,7 @@ class CoinmarketProClient {
                 )
             }
             .toEntity(CoinmarketCapResponse::class.java)
-            .block()
+            .awaitSingle()
 
         responseEntity?.let {
             log.info("Response [${it.statusCode}]")

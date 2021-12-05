@@ -4,6 +4,6 @@ import dev.jacaceresf.kryptomanager.models.WalletCompositeBalance
 
 interface WalletBalanceService {
 
-    fun getWalletCompositeBalance(walletAddress: String): WalletCompositeBalance
+    suspend fun getWalletCompositeBalance(walletAddress: String): WalletCompositeBalance
 
 }

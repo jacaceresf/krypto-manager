@@ -13,6 +13,6 @@ import org.springframework.web.bind.annotation.RestController
 class TransactionController(private val transactionService: TransactionService) {
 
     @PostMapping("/new")
-    fun doTransaction(@RequestBody cryptoTransaction: CryptoTransaction): CryptoTransactionResponse =
+    suspend fun doTransaction(@RequestBody cryptoTransaction: CryptoTransaction): CryptoTransactionResponse =
         transactionService.doTransaction(cryptoTransaction)
 }
