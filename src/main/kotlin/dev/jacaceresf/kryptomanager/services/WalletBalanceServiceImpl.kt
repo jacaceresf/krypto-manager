@@ -16,16 +16,16 @@ class WalletBalanceServiceImpl(
 
     override suspend fun getWalletCompositeBalance(walletAddress: String): WalletCompositeBalance {
         ///get wallet by address
-        val wallet = walletService.getWalletByAddress(walletAddress)
+        val wallet = walletService.getWalletByAddress(address = walletAddress)
 
         ///get wallet transactions
-        val walletTransactions = walletService.getWalletTransactions(walletId = wallet.id)
+        val walletTransactions = walletService.getWalletTransactions(walletId = wallet.id!!)
 
         val cryptoBalanceCollection = mutableListOf<CryptoBalance>()
         ///iterate over transactions and determine amount
 
         val groupedTransactions: Map<Long, List<Transaction>> =
-            walletTransactions.sortedBy { it.timestamp }.groupBy { it.cryptoId }
+            walletTransactions.sortedBy { it.timestamp }.groupBy { it.cryptoId!! }
 
         var currentPortfolioValue = BigDecimal.ZERO
 

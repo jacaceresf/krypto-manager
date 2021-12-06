@@ -5,10 +5,11 @@ import dev.jacaceresf.kryptomanager.models.Wallet
 import dev.jacaceresf.kryptomanager.models.WalletMovementDetail
 import dev.jacaceresf.kryptomanager.models.req.CryptoTransactionResponse
 import dev.jacaceresf.kryptomanager.models.req.WalletFiatReq
+import reactor.core.publisher.Flux
 
 interface WalletService {
 
-    suspend fun getWallets(): MutableIterable<Wallet>
+    suspend fun getWallets(): Flux<Wallet>
 
     suspend fun getWalletByAddress(address: String): Wallet
 

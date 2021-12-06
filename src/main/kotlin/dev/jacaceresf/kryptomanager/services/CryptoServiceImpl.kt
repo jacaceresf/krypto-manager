@@ -10,6 +10,7 @@ import dev.jacaceresf.kryptomanager.repositories.CryptoRepository
 import dev.jacaceresf.kryptomanager.repositories.CryptoValueRepository
 import dev.jacaceresf.kryptomanager.utils.CryptoUtils
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.reactor.awaitSingle
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
@@ -28,12 +29,12 @@ class CryptoServiceImpl(
         val now = LocalDateTime.now()
         prices.forEach {
             Thread.sleep(2000)
-            val crypto = cryptoRepository.findBySymbol(it.symbol)
+            val crypto = cryptoRepository.findBySymbol(it.symbol).awaitSingle()
             val cryptoValue = CryptoValue(
-                cryptoId = crypto.get().id, time = now, value = it.currentPrice
+                cryptoId = crypto.id!!, time = now, value = it.currentPrice
             )
             log.info("Going to save $cryptoValue at ${LocalDateTime.now()}")
-            cryptoValueRepository.save(cryptoValue)
+            cryptoValueRepository.save(cryptoValue).awaitSingle()
         }
     }
 
@@ -44,10 +45,11 @@ class CryptoServiceImpl(
 
     override suspend fun queryPricesFromPriceTracker(): Collection<CryptoCurrentValue> {
 
-        val cryptosDb = cryptoRepository.findAll()
-
+        val cryptoList = mutableListOf<Crypto>()
+        cryptoRepository.findAll().collectList().subscribe(cryptoList::addAll)
         val cryptoSymbol = mutableListOf<String>()
-        cryptosDb.forEach { cryptoSymbol.add(it.symbol) }
+
+        cryptoList.forEach { cryptoSymbol.add(it.symbol) }
 
         val cryptoData = coinmarketProClient.getCryptoData(cryptoSymbol)
 
@@ -71,11 +73,10 @@ class CryptoServiceImpl(
 
     override suspend fun getCryptoInfo(symbol: String): CryptoHistoricInfo {
 
-        val crypto = CryptoUtils.getCryptoFromOptional(cryptoRepository.findBySymbol(symbol))
+        val crypto = CryptoUtils.getCryptoFromOptional(cryptoRepository.findBySymbol(symbol).awaitSingle())
+        val prices = mutableListOf<CryptoValue>()
 
-        val priceDb = cryptoValueRepository.findAll().toList()
-
-        val prices = if (priceDb.isNotEmpty()) priceDb.toList() else emptyList()
+        cryptoValueRepository.findAll().collectList().subscribe(prices::addAll)
 
         return CryptoHistoricInfo(
             crypto = crypto,
@@ -84,7 +85,7 @@ class CryptoServiceImpl(
     }
 
     override suspend fun getCryptoBySymbol(symbol: String): Crypto {
-        return CryptoUtils.getCryptoFromOptional(cryptoRepository.findBySymbol(symbol))
+        return CryptoUtils.getCryptoFromOptional(cryptoRepository.findBySymbol(symbol).awaitSingle())
     }
 
     override suspend fun getCryptoCurrentPrice(symbol: String): CryptoCurrentValue {
@@ -107,7 +108,7 @@ class CryptoServiceImpl(
 
     override suspend fun getCryptoCurrentPriceFromId(cryptoId: Long): CryptoCurrentValue {
 
-        val crypto = CryptoUtils.getCryptoFromOptional(cryptoRepository.findById(cryptoId))
+        val crypto = CryptoUtils.getCryptoFromOptional(cryptoRepository.findById(cryptoId).awaitSingle())
 
         return getCryptoCurrentPrice(crypto.symbol)
     }

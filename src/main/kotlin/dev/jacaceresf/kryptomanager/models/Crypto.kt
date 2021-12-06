@@ -1,19 +1,16 @@
 package dev.jacaceresf.kryptomanager.models
 
 import com.fasterxml.jackson.annotation.JsonIgnore
+import org.springframework.data.annotation.Id
+import org.springframework.data.relational.core.mapping.Table
 import java.math.BigDecimal
 import java.time.LocalDateTime
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
-import javax.persistence.Id
 
-@Entity(name = "cryptocurrency")
+@Table(value = "cryptocurrency")
 data class Crypto(
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonIgnore
-    val id: Long = -1,
+    val id: Long? = null,
     val symbol: String,
     val name: String
 ) {
@@ -22,12 +19,11 @@ data class Crypto(
     }
 }
 
-@Entity
+@Table
 data class CryptoValue(
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonIgnore
-    val id: Long = -1,
+    val id: Long? = null,
     val cryptoId: Long,
     val time: LocalDateTime,
     val value: BigDecimal

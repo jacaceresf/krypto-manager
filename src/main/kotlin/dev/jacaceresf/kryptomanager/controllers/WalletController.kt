@@ -6,6 +6,7 @@ import dev.jacaceresf.kryptomanager.models.req.WalletFiatReq
 import dev.jacaceresf.kryptomanager.services.WalletBalanceService
 import dev.jacaceresf.kryptomanager.services.WalletService
 import org.springframework.web.bind.annotation.*
+import reactor.core.publisher.Flux
 
 @RestController
 @RequestMapping("/wallets")
@@ -15,7 +16,7 @@ class WalletController(
 ) {
 
     @GetMapping
-    suspend fun getAllWallets(): MutableIterable<Wallet> = walletService.getWallets()
+    suspend fun getAllWallets(): Flux<Wallet> = walletService.getWallets()
 
     @GetMapping("/address/{address}")
     suspend fun getWalletByAddress(@PathVariable("address") address: String): Wallet = walletService.getWalletByAddress(address)

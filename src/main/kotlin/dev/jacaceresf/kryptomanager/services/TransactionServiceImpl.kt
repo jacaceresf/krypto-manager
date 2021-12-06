@@ -6,6 +6,7 @@ import dev.jacaceresf.kryptomanager.models.req.CryptoTransaction
 import dev.jacaceresf.kryptomanager.models.req.CryptoTransactionResponse
 import dev.jacaceresf.kryptomanager.models.req.CryptoTransactionType
 import dev.jacaceresf.kryptomanager.repositories.TransactionRepository
+import kotlinx.coroutines.reactor.awaitSingle
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
@@ -91,7 +92,8 @@ class TransactionServiceImpl(
 
         log.info("Got transaction token -> [${transactionToSave.token}]")
 
-        transactionRepository.save(transactionToSave)
+
+        transactionRepository.save(transactionToSave).awaitSingle()
 
         val response = CryptoTransactionResponse(
             wallet = wallet,

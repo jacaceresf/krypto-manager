@@ -22,6 +22,6 @@
 - ~~Add reactive endpoints.~~
 
 ## Stage 5
-- Reactive Repository with R2DBC. 
+- ~~Reactive Repository with R2DBC.~~ 
 - Migrate from SpringRepository to JetBrain's Exposed ORM (this will add code complexity, but it will be good to
   practice with it) 

@@ -2,21 +2,22 @@ package dev.jacaceresf.kryptomanager.repositories
 
 import dev.jacaceresf.kryptomanager.models.Wallet
 import dev.jacaceresf.kryptomanager.models.WalletMovement
-import org.springframework.data.repository.CrudRepository
+import org.springframework.data.repository.reactive.ReactiveCrudRepository
 import org.springframework.stereotype.Repository
-import java.util.*
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 
 @Repository
-interface WalletRepository : CrudRepository<Wallet, Long> {
+interface WalletRepository : ReactiveCrudRepository<Wallet, Long> {
 
-    suspend fun findByAddress(address: String): Optional<Wallet>
+    suspend fun findByAddress(address: String): Mono<Wallet>
 
-    suspend fun findByUserEmail(userEmail: String): Optional<Wallet>
+    suspend fun findByUserEmail(userEmail: String): Mono<Wallet>
 }
 
 @Repository
-interface WalletMovementRepository : CrudRepository<WalletMovement, Long> {
+interface WalletMovementRepository : ReactiveCrudRepository<WalletMovement, Long> {
 
-    suspend fun findByWalletId(walletId: Long): Collection<WalletMovement>
+    suspend fun findByWalletId(walletId: Long): Flux<WalletMovement>
 
 }
