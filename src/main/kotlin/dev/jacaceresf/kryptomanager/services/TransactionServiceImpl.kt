@@ -6,6 +6,7 @@ import dev.jacaceresf.kryptomanager.models.req.CryptoTransaction
 import dev.jacaceresf.kryptomanager.models.req.CryptoTransactionResponse
 import dev.jacaceresf.kryptomanager.models.req.CryptoTransactionType
 import dev.jacaceresf.kryptomanager.repositories.TransactionRepository
+import kotlinx.coroutines.reactive.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingle
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -42,7 +43,7 @@ class TransactionServiceImpl(
         log.info("Going to create transaction with request -> $cryptoTransaction")
 
         /// get wallet
-        val wallet = walletService.getWalletByAddress(cryptoTransaction.walletAddress)
+        val wallet = walletService.getWalletByAddress(cryptoTransaction.walletAddress).awaitSingle()
 
         ///get crypto from symbol
         val crypto = cryptoService.getCryptoBySymbol(cryptoTransaction.crypto)

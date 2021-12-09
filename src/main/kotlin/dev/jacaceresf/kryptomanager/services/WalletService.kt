@@ -5,13 +5,15 @@ import dev.jacaceresf.kryptomanager.models.Wallet
 import dev.jacaceresf.kryptomanager.models.WalletMovementDetail
 import dev.jacaceresf.kryptomanager.models.req.CryptoTransactionResponse
 import dev.jacaceresf.kryptomanager.models.req.WalletFiatReq
+import kotlinx.coroutines.flow.Flow
 import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 
 interface WalletService {
 
-    suspend fun getWallets(): Flux<Wallet>
+    suspend fun getWallets(): Flow<Wallet>
 
-    suspend fun getWalletByAddress(address: String): Wallet
+    suspend fun getWalletByAddress(address: String): Mono<Wallet>
 
     suspend fun createWallet(userEmail: String): Wallet
 

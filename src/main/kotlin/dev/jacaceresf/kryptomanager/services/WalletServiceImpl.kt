@@ -1,6 +1,10 @@
 package dev.jacaceresf.kryptomanager.services
 
-import dev.jacaceresf.kryptomanager.models.*
+import dev.jacaceresf.kryptomanager.exceptions.NotFoundException
+import dev.jacaceresf.kryptomanager.models.MovementType
+import dev.jacaceresf.kryptomanager.models.Wallet
+import dev.jacaceresf.kryptomanager.models.WalletMovement
+import dev.jacaceresf.kryptomanager.models.WalletMovementDetail
 import dev.jacaceresf.kryptomanager.models.req.CryptoTransactionResponse
 import dev.jacaceresf.kryptomanager.models.req.CryptoTransactionType
 import dev.jacaceresf.kryptomanager.models.req.WalletFiatReq
@@ -8,10 +12,13 @@ import dev.jacaceresf.kryptomanager.repositories.TransactionRepository
 import dev.jacaceresf.kryptomanager.repositories.WalletMovementRepository
 import dev.jacaceresf.kryptomanager.repositories.WalletRepository
 import dev.jacaceresf.kryptomanager.utils.WalletUtils
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.toCollection
+import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import org.springframework.stereotype.Service
-import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.util.*
@@ -23,10 +30,14 @@ class WalletServiceImpl(
     private val transactionRepository: TransactionRepository
 ) : WalletService {
 
-    override suspend fun getWallets(): Flux<Wallet> = walletRepository.findAll();
+    override suspend fun getWallets(): Flow<Wallet> = walletRepository.findAll().asFlow();
 
-    override suspend fun getWalletByAddress(address: String): Wallet {
-        return WalletUtils.getWalletFromOptional(walletRepository.findByAddress(address).awaitSingle())
+    override suspend fun getWalletByAddress(address: String): Mono<Wallet> {
+        return walletRepository.findByAddress(address).switchIfEmpty(
+            Mono.error(
+                NotFoundException("Wallet with address $address not found")
+            )
+        )
     }
 
     override suspend fun createWallet(userEmail: String): Wallet {
@@ -57,8 +68,7 @@ class WalletServiceImpl(
 
     override suspend fun addFiatBalance(walletFiatReq: WalletFiatReq): Wallet {
 
-        val wallet =
-            WalletUtils.getWalletFromOptional(walletRepository.findByAddress(walletFiatReq.walletAddress).awaitSingle())
+        val wallet = getWalletByAddress(walletFiatReq.walletAddress).awaitSingle()
 
         if (walletFiatReq.balance < BigDecimal.ZERO) {
             throw RuntimeException("Invalid balance value")
@@ -83,13 +93,11 @@ class WalletServiceImpl(
 
     override suspend fun getWalletMovements(address: String, from: String?, to: String?): WalletMovementDetail {
 
-        val wallet = WalletUtils.getWalletFromOptional(walletRepository.findByAddress(address).awaitSingle())
-
-        val movementsList = walletMovementRepository.findByWalletId(wallet.id!!).collectList().awaitSingle()
+        val wallet = getWalletByAddress(address).awaitSingle()
 
         return WalletMovementDetail(
             wallet = wallet,
-            movements = movementsList
+            movements = walletMovementRepository.findByWalletId(wallet.id!!).toCollection(mutableListOf())
         )
     }
 
@@ -135,7 +143,7 @@ class WalletServiceImpl(
         walletMovementRepository.save(walletMovement).awaitSingle()
     }
 
-    override suspend fun getWalletTransactions(walletId: Long): Collection<Transaction> {
-        return transactionRepository.findByWalletIdOrderByTimestampAsc(walletId).collectList().awaitSingle()
-    }
+    override suspend fun getWalletTransactions(walletId: Long) =
+        transactionRepository.findByWalletIdOrderByTimestampAsc(walletId).toCollection(mutableListOf())
+
 }

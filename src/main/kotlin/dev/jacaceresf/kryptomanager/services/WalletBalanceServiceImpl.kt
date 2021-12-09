@@ -4,6 +4,8 @@ import dev.jacaceresf.kryptomanager.models.CryptoBalance
 import dev.jacaceresf.kryptomanager.models.Transaction
 import dev.jacaceresf.kryptomanager.models.TransactionType
 import dev.jacaceresf.kryptomanager.models.WalletCompositeBalance
+import kotlinx.coroutines.reactive.awaitSingle
+import kotlinx.coroutines.reactor.awaitSingle
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 
@@ -16,7 +18,7 @@ class WalletBalanceServiceImpl(
 
     override suspend fun getWalletCompositeBalance(walletAddress: String): WalletCompositeBalance {
         ///get wallet by address
-        val wallet = walletService.getWalletByAddress(address = walletAddress)
+        val wallet = walletService.getWalletByAddress(address = walletAddress).awaitSingle()
 
         ///get wallet transactions
         val walletTransactions = walletService.getWalletTransactions(walletId = wallet.id!!)
